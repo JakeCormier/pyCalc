@@ -1,7 +1,35 @@
 import sys
+import math
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+
+
+class Button:
+    def __init__(self, text, results):
+        self.b = QPushButton(str(text))
+        self.text = text
+        self.results = results
+        self.b.clicked.connect(lambda: self.handleInput(self.text))
+
+    def handleInput(self, v):
+        if v == "=":
+            res = eval(self.results.text())
+            self.results.setText(str(res))
+        elif v == "AC":
+            self.results.setText("")
+        elif v == "√":
+            value = float(self.results.text())
+            self.results.setText(str(math.sqrt(value)))
+        elif v == "<-":
+            current_value = self.results.text()
+            self.results.setText(current_value[:-1])
+        else:
+            current_value = self.results.text()
+            new_value = current_value + str(v)
+            self.results.setText(new_value)
+            #print("clicked", v)
+
 
 class Application(QWidget):
     def __init__(self):
@@ -14,25 +42,28 @@ class Application(QWidget):
         results = QLineEdit()
 
         #creating the grid Layout
-        buttons = ["AC", "C", "CE", "/",
+        buttons = ["AC", "√", "<-", "/",
                   7, 8, 9, "*",
+                  4, 5, 6, "-",
                   1, 2, 3, "+",
                   0, ".", "="]
 
+        grid.addWidget(results, 0, 0, 1, 4)
+
         row = 1
         column = 0
-
-        grid.addWidget(results, 0, 0, 1, 4)
 
         for button in buttons:
             if column > 3:
                 column = 0
                 row += 1
+
+            buttonObj = Button(button, results)
             if button == 0:
-                grid.addWidget(QPushButton(str(button)), row, column, 1, 2)
+                grid.addWidget(buttonObj.b, row, column, 1, 2)
                 column += 1
             else:
-                grid.addWidget(QPushButton(str(button)), row, column, 1, 1)
+                grid.addWidget(buttonObj.b, row, column, 1, 1)
             column += 1
 
 
